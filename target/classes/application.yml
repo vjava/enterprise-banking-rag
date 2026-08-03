@@ -1,0 +1,70 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: enterprise-banking-rag
+  main:
+    allow-bean-definition-overriding: true
+
+  # Database Connection
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:vectordb}
+    username: ${DB_USER:aiuser}
+    password: ${DB_PASS:Password123}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # AI Configurations
+  ai:
+    model:
+      embedding: ollama
+    provider: openai-compatible
+
+    # 1. External Chat Configuration (KodeKloud / OpenAI-Compatible)
+    openai:
+      base-url: ${AI_URL:https://api.ai.kodekloud.com}
+      api-key: ${AI_PASSWORD:sk-SfCkZkAG8cTjy4IPL0skjQ}
+      chat:
+        options:
+          model: ${AI_MODEL:claude-haiku-4-5}
+          temperature: 0.2
+          max-tokens: 4096
+      embedding:
+        enabled: false # Explicitly disable OpenAI embeddings
+
+    # 2. Local Ollama Configuration (For Embeddings)
+    ollama:
+      base-url: ${OLLAMA_URL:http://localhost:11434}
+      embedding:
+        enabled: true
+        options:
+          model: ${OLLAMA_EMBEDDING_MODEL:nomic-embed-text}
+
+    # 3. Vector Store Configuration (pgvector)
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 768 # Required for nomic-embed-text embeddings
+        remove-existing-vector-store-table: false
+
+# Logging Configuration
+logging:
+  level:
+    com.bank.rag: INFO
+    org.springframework.ai: INFO
+
+# Actuator Endpoints Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
