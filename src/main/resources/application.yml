@@ -10,8 +10,8 @@ spring:
   # Database Connection
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:vectordb}
-    username: ${DB_USER:aiuser}
-    password: ${DB_PASS:Password123}
+    username: ${DB_USER:user}
+    password: ${DB_PASS:password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
